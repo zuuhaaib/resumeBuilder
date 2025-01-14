@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatic Resume Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(120deg, #84fab0, #8fd3f4);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input, textarea {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #4caf50;
+      outline: none;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .preview-container {
+      margin-top: 20px;
+    }
+
+    .resume-preview {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      overflow: auto;
+      max-height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Resume Builder</h1>
+    <form id="resumeForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email">
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" placeholder="Enter your address" required>
+
+      <label for="experience">Experience</label>
+      <textarea id="experience" name="experience" placeholder="Describe your experience" rows="3" required></textarea>
+
+      <label for="education">Education</label>
+      <textarea id="education" name="education" placeholder="Enter your education details" rows="3" required></textarea>
+
+      <label for="jobSummary">Job Summary</label>
+      <textarea id="jobSummary" name="jobSummary" placeholder="Describe the job summary" rows="4" required></textarea>
+
+      <button type="submit">Generate Resume</button>
+    </form>
+  </div>
+
+  <script>
+    const resumeForm = document.getElementById('resumeForm');
+
+    resumeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        experience: document.getElementById('experience').value,
+        education: document.getElementById('education').value,
+        jobSummary: document.getElementById('jobSummary').value,
+      };
+
+      try {
+        const response = await fetch('/api/generate-resume', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        if (data.resume) {
+          const resumePage = window.open();
+          resumePage.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Generated Resume</title>
+              <style>
+                body {
+                  font-family: 'Roboto', sans-serif;
+                  margin: 20px;
+                  line-height: 1.6;
+                }
+                h2, h3 {
+                  color: #4caf50;
+                }
+                ul {
+                  margin: 10px 0;
+                  padding: 0 20px;
+                }
+                li {
+                  margin-bottom: 5px;
+                }
+              </style>
+            </head>
+            <body>
+              ${data.resume}
+            </body>
+            </html>
+          `);
+        } else {
+          alert('Failed to generate resume. Please try again.');
+        }
+      } catch (error) {
+        alert('Error generating resume. Please try again.');
+        console.error('Error:', error);
+      }
+    });
+  </script>
+</body>
+</html>
