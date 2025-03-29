@@ -12,10 +12,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Test route to check if the environment variable is accessible
-app.get('/test', (req, res) => {
-  res.send(`OpenAI API Key: ${process.env.OPENAI_API_KEY}`);
-});
+
 
 // Routes
 app.use('/api/generate-resume', resumeRoutes);
